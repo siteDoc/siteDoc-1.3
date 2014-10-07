@@ -1,0 +1,45 @@
+/* Copyright Mike Brockington 2008 - 2014 All rights reserved. */
+/* Build Number:1:*/
+BODY
+{
+    color:black;
+    background-color:#e0FFe0;
+    background-image:url(/background.gif);
+    font-family:Bookman,Times,serif;
+    margin:5px;
+    border:0;
+    padding:5px;
+}
+
+H1
+{
+    color:black;
+    background-color:white;
+}
+H2
+{
+    color:black;
+    background-color:#7a7a7a;
+}
+
+img.siteLogo { float:right; }
+
+#mainDiv
+{
+    color:black;
+    background-color:white;
+}
+
+@media print
+{
+    .noPrint{display:none;}
+    #divCopyright{color:black;background:white;clear:both;margin:2px;border:1px solid black;}
+    BODY{color:black;background:white;margin:3pt;border-width:1px;line-height:110%;}
+}
+
+.not-used-at-the-moment:hover { background-color:silver;
+            transition: background-color ease-in-out 800ms; /* css3 transition */
+         -o-transition: background-color ease-in-out 800ms;
+       -moz-transition: background-color ease-in-out 800ms;
+    -webkit-transition: background-color ease-in-out 800ms;
+}
