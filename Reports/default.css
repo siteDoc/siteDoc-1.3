@@ -30,6 +30,15 @@ img.siteLogo { float:right; }
     background-color:white;
 }
 
+UL {
+  border:1px solid black;
+  padding-top:10px;  /* Need a little padding to prevent the content showing when the box has been 'shrunk' */
+    -webkit-transition: max-height 0.75s ease-in-out;
+       -moz-transition: max-height 0.75s ease-in-out;
+         -o-transition: max-height 0.75s ease-in-out;
+            transition: max-height 0.75s ease-in-out;
+}
+
 @media print
 {
     .noPrint{display:none;}

@@ -3,13 +3,15 @@
 
 function shrinkList(parentNode){
   if(parentNode){
-    // do some shrinking:
     // alert("This node is:"+parentNode);
     var thisList = parentNode.getElementsByTagName("UL");
+    var thisBox  = thisList[0];
     // alert("thisList is:"+thisList);
-    alert("First item is:"+thisList[0]);
-    thisList[0].style.display = 'none';
-
+    // alert("First item is:"+thisList[0]);
+    var initialHeight = thisBox.offsetHeight;
+    // alert("Initial Height: " + initialHeight);
+    thisBox.style.maxHeight = '10px';
+    thisBox.style.overflow = 'hidden';
   }else{
     alert("This node ("+parentNode+") is not valid");
   }
@@ -18,8 +20,9 @@ function shrinkList(parentNode){
 function expandList(parentNode){
   if(parentNode){
     var thisList = parentNode.getElementsByTagName("UL");
-    alert("First item is:"+thisList[0]);
-    thisList[0].style.display = 'block';
+    var thisBox  = thisList[0];
+    thisBox.style.maxHeight = '10000px';
+    thisBox.style.overflow = 'auto';
   }else{
     alert("This node ("+parentNode+") is not valid");
   }
