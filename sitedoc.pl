@@ -549,7 +549,7 @@ sub processSourceFiles{
                 $fileCounter++;
                 push(@gblFileArray, $thisFile);
                 $thisBareFileID = @gblFileArray;
-                displayMsg(100, "processSourceFiles: \$thisFile = \"$thisFile\"\n");
+                displayMsg(10, "processSourceFiles: \$thisFile = \"$thisFile\"\n");
                 unless (open CURRENTFILE, $thisFile)
                 {
                     displayMsg(90, "Unable to read from \"$thisFile\": $!\n");
@@ -738,7 +738,7 @@ sub processFunctionName{
     my $thisExtract = shift||'';
     my $lineNumber  = shift||0;
     my $linkText;
-    while($thisExtract =~ /\sfunction/i)
+    while($thisExtract =~ /\bfunction/i)
     {
         $linkText = $thisExtract;
         # Search for a function name:
@@ -1288,7 +1288,7 @@ sub processCSS{
 ############################################################################
 sub processImage{
     my $fileName = shift||'';
-    # No need to read binary data, so pretty much ignore this file type,
+    # No need to read binary data, so pretty much ignore this file type, except:
     # Find out the file size:
     my $fileSize = -s $fileName;
 
@@ -1311,7 +1311,7 @@ sub processJavascript{
         #  = new function
         #  = new Function
         if ($temp =~ /=\s*new\s+function/i){
-            displayMsg(33, "processJavascript 1a\n");
+            displayMsg(5, "processJavascript 1a\n");
             processNewAnonFunction($temp, $lineNumber);
             next;
         }
@@ -1327,14 +1327,14 @@ sub processJavascript{
         #  'named: function()'
         #  funcName : function
         if ($temp =~ /\S*\s*:\s*function/i){
-            displayMsg(33, "processJavascript 1c\n");
+            displayMsg(5, "processJavascript 1c\n");
             processAnonMethod($temp, $lineNumber);
             next;
         }
 
         #  function(param)
         if ($temp =~ /\bfunction\w+\([\W, ]\)/i){
-            displayMsg(55, "processJavascript 1d\n");
+            displayMsg(5, "processJavascript 1d\n");
             processAnonFunction($temp, $lineNumber);
             next;
         }
@@ -1355,7 +1355,7 @@ sub processJavascript{
             next;
         }
         # Next line should only be reachable by 'normal' JS code:
-        displayMsg(20, "processJavascript: Ignoring: \"$temp\"\n");
+        displayMsg(20, "processJavascript: Ignoring: $lineNumber \"$temp\"\n");
         # If 'function code' gets this far, then one of the previous regexp's is too tight
     }
     displayMsg(33, "\n");
@@ -2288,7 +2288,7 @@ sub getFirstPassDoubleFileLink{
     my $strFolder = shift||'';
     my $strOutput = "";
 
-        displayMsg(200, "getFirstPassDoubleFileLink folder: $strFolder\n");
+        displayMsg(20, "getFirstPassDoubleFileLink folder: $strFolder\n");
 
     # MJB ToDo: Add image types
     if(($strFolder eq "CSS") || ($strFolder eq "HTML") || ($strFolder eq "JS") ){
