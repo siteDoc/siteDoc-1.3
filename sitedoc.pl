@@ -99,12 +99,10 @@ my @barePseudoElements = qw(before after);
 readConfig();
 
 my $gblLogLevel = $configValues{"logLevel"};
-if ($gblLogLevel < 0)
-{
+if ($gblLogLevel < 0){
     $gblLogLevel = 1;
 }
-if ($gblLogLevel > 100)
-{
+if ($gblLogLevel > 100){
     $gblLogLevel = 100;
 }
 $gblLogLevel = $gblLogLevel - 1;
@@ -210,8 +208,7 @@ sub processData{
     my $thisFile     = $File::Find::name;
     #my $thisFileName = getFileName($thisFile);
 
-    if(-d)
-    {
+    if(-d){
         displayMsg(70, "Parsing contents of data Folder: ".$thisFile."\n");
 
         # ToDo: Flesh this out
@@ -224,13 +221,11 @@ sub processData{
         closedir $dh or displayMsg(50, "WARNING processData(): Can't closedir: $!");
         displayMsg(55, "  Folder contains: ".$fileCount." files\n");
     }else{
-        unless (open CURRENTFILE, $thisFile)
-        {
+        unless (open CURRENTFILE, $thisFile){
             displayMsg(90, "ERROR 20F20B: Unable to read from $thisFile: $!\n");
             return;
         }
-        if (checkDatFileFormat($thisFile) )
-        {
+        if (checkDatFileFormat($thisFile) ){
             displayMsg(60, "Internal Data File: ".$thisFile."\n");
             writeInternalData($thisFile);
         }else{
@@ -245,8 +240,7 @@ sub preProcessData{
     my $thisFile     = $File::Find::name;
     #my $thisFileName = getFileName($thisFile);
 
-    if(-d)
-    {
+    if(-d){
         displayMsg(70, "Parsing contents of data Folder: ".$thisFile."\n");
 
         # ToDo: Flesh this out
@@ -259,13 +253,11 @@ sub preProcessData{
         closedir $dh or displayMsg(50, "WARNING 20F20D: processData(): Can't closedir: $!");
         displayMsg(55, "  Folder contains: ".$fileCount." files\n");
     }else{
-        unless (open CURRENTFILE, $thisFile)
-        {
+        unless (open CURRENTFILE, $thisFile){
             displayMsg(999, "ERROR 20F1FD: Unable to read from $thisFile: $!\n");
             return;
         }
-        if (checkDatFileFormat($thisFile) )
-        {
+        if (checkDatFileFormat($thisFile) ){
             displayMsg(60, "Internal Data File: ".$thisFile."\n");
             indexInternalData($thisFile);
         }else{
@@ -280,8 +272,7 @@ sub reProcessData{
     my $thisFile = $File::Find::name;
     #my $thisFileName = getFileName($thisFile);
 
-    if(-d)
-    {
+    if(-d){
         displayMsg(70, "Parsing contents of data Folder: ".$thisFile."\n");
 
         # ToDo: Flesh this out
@@ -294,13 +285,11 @@ sub reProcessData{
         closedir $dh or displayMsg(50, "WARNING 20F20F: processData(): Can't closedir: $!");
         displayMsg(55, "  Folder contains: ".$fileCount." files\n");
     }else{
-        unless (open CURRENTFILE, $thisFile)
-        {
+        unless (open CURRENTFILE, $thisFile){
             displayMsg(999, "ERROR 20F141: Second Pass: Unable to read from $thisFile: $!\n");
             return;
         }
-        if (checkDatFileFormat($thisFile) )
-        {
+        if (checkDatFileFormat($thisFile) ){
             displayMsg(100, "Second Pass: Internal Data File: ".$thisFile."\n");
             getSecondPassData($thisFile);
         }else{
@@ -338,16 +327,14 @@ sub buildDataReport{
     my $gblTruncatedFileCount;
 
 # Next block MUST match with: sub getDataLink
-    if($thisLink eq "*")
-    {
+    if($thisLink eq "*"){
         $thisLink = "STAR";           # A 'raw' asterisk causes all sorts of problems
     }
     $thisLink =~ s/[()]//g;           # Remove any round brackets
     $thisLink =~ s/[^a-zA-Z0-9]/_/g;  # Replace non-alpha chars with underscores
 # as far as this point
 
-    if(length($thisLink) > $configValues{"maxFileNameLength"} )
-    {
+    if(length($thisLink) > $configValues{"maxFileNameLength"} ){
         displayMsg(90, "WARNING 20F18F: Having to truncate: $thisLink, original length: (".length($thisLink).")\n");
         $gblTruncatedFileCount++;
         my $requiredLinkLength = ($configValues{"maxFileNameLength"} - length($gblTruncatedFileCount));
@@ -363,8 +350,7 @@ sub buildDataReport{
     $outFileSpec = $outFileSpec.$thisLink;
 
     ## MJB Why the hell do we _NOT_ need to escape the dot on the next line??
-    unless (open OUTFILE_DAT, ">$outFileSpec.html")
-    {
+    unless (open OUTFILE_DAT, ">$outFileSpec.html"){
         #ToDo: Make a second attempt?
         displayMsg(999, "ERROR 20F16F: Unable to write to $outFileSpec\.html: $!\n");
         return;
@@ -383,11 +369,9 @@ sub writeSecondPassIndexBlock{
     my $thisLine = 0;
 
 
-    foreach (@gblTAGlist)
-    {
+    foreach (@gblTAGlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "CSS Tag Selector");
         }
@@ -395,11 +379,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("CSS Tag Selector Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblIMGlist)
-    {
+    foreach (@gblIMGlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "Image");
         }
@@ -407,11 +389,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("&lt;Image&gt; Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblFORMlist)
-    {
+    foreach (@gblFORMlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "FORM action");
         }
@@ -419,11 +399,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("&lt;Form&gt; Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblCSSFILElist)
-    {
+    foreach (@gblCSSFILElist){
         $thisLink = getDataLink($_, "files/CSS");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "CSS File");
         }
@@ -431,11 +409,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("CSS File Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblCLASSlist)
-    {
+    foreach (@gblCLASSlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "CSS Classes");
         }
@@ -443,11 +419,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("CSS Class Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblIDlist)
-    {
+    foreach (@gblIDlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "CSS ID");
         }
@@ -455,11 +429,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("CSS ID Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblHREFlist)
-    {
+    foreach (@gblHREFlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "Hyperlinks");
         }
@@ -467,11 +439,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("HREF Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblJSFILElist)
-    {
+    foreach (@gblJSFILElist){
         $thisLink = getDataLink($_, "files/JS");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "JavaScript Files");
         }
@@ -479,12 +449,10 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("JS File Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblFUNClist)
-    {
+    foreach (@gblFUNClist){
         $thisLink = getDataLink($_, "lists");
         $thisLine = getDataLine($_);
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "JavaScript Named Functions", $thisLine);
         }
@@ -492,11 +460,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("JS Named Function Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblANONlist)
-    {
+    foreach (@gblANONlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "JavaScript Anonymous Functions");
         }
@@ -504,11 +470,9 @@ sub writeSecondPassIndexBlock{
     print INDEX_FILE &buildPageBlockList("JS 'Anonymous Function' Usage List", $thisList);
     $thisList = "";
 
-    foreach (@gblMETHlist)
-    {
+    foreach (@gblMETHlist){
         $thisLink = getDataLink($_, "lists");
-        if($thisLink)
-        {
+        if($thisLink){
             $thisList .= "\n<li>$thisLink</li>";
             buildDataReport($_, "JavaScript Method");
         }
@@ -527,10 +491,8 @@ sub processSourceFiles{
     my $thisBareFileID;
     my $thisFolderLocation;
 
-    if(-d)
-    {
-        if($thisFile =~ m/$configValues{"ignoreFolderPatterns"}/i )
-        {
+    if(-d){
+        if($thisFile =~ m/$configValues{"ignoreFolderPatterns"}/i ){
             displayMsg(200, "Folder Ignored: \"$thisFile\"\n");
         }else{
             $folderCounter++;
@@ -544,23 +506,19 @@ sub processSourceFiles{
         }
     }else{
         displayMsg(2, "\nSource File Ext: \"$thisFileExt\"\n");
-        if($thisFile =~ m/$configValues{"ignoreFilePatterns"}/i )
-        {
+        if($thisFile =~ m/$configValues{"ignoreFilePatterns"}/i ){
             displayMsg(25, "+File Ignored:     \"$thisFile\"\n");
         }else{
-            if ($thisFileExt =~ m/shtml\z|html\z|htm\z|js\z|css\z|asp\z|jsp\z|php\z|aspx\z|jpg\z|jpeg\z|svg\z|png\z|gif\z|bmp\z/i )
-            {
+            if ($thisFileExt =~ m/shtml\z|html\z|htm\z|js\z|css\z|asp\z|jsp\z|php\z|aspx\z|jpg\z|jpeg\z|svg\z|png\z|gif\z|bmp\z/i ){
                 $fileCounter++;
                 push(@gblFileArray, $thisFile);
                 $thisBareFileID = @gblFileArray;
                 displayMsg(10, "processSourceFiles: \$thisFile = \"$thisFile\"\n");
-                unless (open CURRENTFILE, $thisFile)
-                {
+                unless (open CURRENTFILE, $thisFile){
                     displayMsg(90, "Unable to read from \"$thisFile\": $!\n");
                     return;
                 }
-                if ($thisFileExt =~ m/html\z|htm\z/i )
-                {
+                if ($thisFileExt =~ m/html\z|htm\z/i ){
                     displayMsg(100, "HTML File: ".$thisFile."\n");
                     $thisFolderLocation = "HTML";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileLink($thisBareFileID, $thisFile, $thisFolderLocation)."</li>";
@@ -569,8 +527,7 @@ sub processSourceFiles{
                     writePageData_HTML($thisBareFileID);
                 }
 
-                if ($thisFileExt eq "shtml" )
-                {
+                if ($thisFileExt eq "shtml" ){
                     displayMsg(100, "Server-Side (shtml) File: ".$thisFile."\n");
                     $thisFolderLocation = "HTML";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileLink($thisBareFileID, $thisFile, $thisFolderLocation)."</li>";
@@ -579,8 +536,7 @@ sub processSourceFiles{
                     writePageData_HTML($thisBareFileID);   # ToDo: change this line to a more-specific routine
                 }
 
-                if ($thisFileExt eq "asp" || $thisFileExt eq "aspx" )
-                {
+                if ($thisFileExt eq "asp" || $thisFileExt eq "aspx" ){
                     displayMsg(100, "Server-Side (ASP) File: ".$thisFile."\n");
                     $thisFolderLocation = "HTML";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileLink($thisBareFileID, $thisFile, $thisFolderLocation)."</li>";
@@ -589,8 +545,7 @@ sub processSourceFiles{
                     writePageData_HTML($thisBareFileID);   # ToDo: change this line to a more-specific routine
                 }
 
-                if ($thisFileExt eq "jsp")
-                {
+                if ($thisFileExt eq "jsp"){
                     displayMsg(100, "Server-Side (JSP) File: ".$thisFile."\n");
                     $thisFolderLocation = "HTML";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileLink($thisBareFileID, $thisFile, $thisFolderLocation)."</li>";
@@ -599,8 +554,7 @@ sub processSourceFiles{
                     writePageData_HTML($thisBareFileID);   # ToDo: change this line to a more-specific routine
                 }
 
-                if ($thisFileExt eq "php" )
-                {
+                if ($thisFileExt eq "php" ){
                     displayMsg(100, "Server-Side (PHP) File: ".$thisFile."\n");
                     $thisFolderLocation = "HTML";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileLink($thisBareFileID, $thisFile, $thisFolderLocation)."</li>";
@@ -609,8 +563,7 @@ sub processSourceFiles{
                     writePageData_HTML($thisBareFileID);   # ToDo: change this line to a more-specific routine
                 }
 
-                if ($thisFileExt eq "js" )
-                {
+                if ($thisFileExt eq "js" ){
                     displayMsg(100, "JS File:    ".$thisFile."\n");
                     $thisFolderLocation = "JS";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileLink($thisBareFileID, $thisFile, $thisFolderLocation)."</li>";
@@ -619,8 +572,7 @@ sub processSourceFiles{
                     writePageData_JS($thisBareFileID);
                 }
 
-                if ($thisFileExt eq "css" )
-                {
+                if ($thisFileExt eq "css" ){
                     displayMsg(100, "CSS File:   ".$thisFile."\n");
                     $thisFolderLocation = "CSS";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileLink($thisBareFileID, $thisFile, $thisFolderLocation)."</li>";
@@ -629,8 +581,7 @@ sub processSourceFiles{
                     writePageData_CSS($thisBareFileID);
                 }
 
-                if ($thisFileExt =~ m/jpg\z|jpeg\z|svg\z|png\z|gif\z|bmp|ico\z/i )
-                {
+                if ($thisFileExt =~ m/jpg\z|jpeg\z|svg\z|png\z|gif\z|bmp|ico\z/i ){
                     displayMsg(100, uc($thisFileExt)." File:  ".$thisFile."\n");
                     $thisFolderLocation = "IMG";
                     print INDEX_FILE "\n<li>".getFirstPassDoubleFileImageLink($thisBareFileID, $thisFile, $thisFolderLocation, processImage($thisFile) )."</li>";
@@ -654,12 +605,10 @@ sub processSourceFiles{
 sub processHREF{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /href/i)
-    {
+    while($thisExtract =~ /href/i){
         $linkText = $thisExtract;
         $linkText =~ /href\s*=\s*('|")(.+?)('|")/;   # " The double-quote chars in this regex confuses UltraEdits syntax highlighting, but the one at the start of this comment sorts things out
-        if($2)
-        {
+        if($2){
             push(@HREF_List, $2."\n");
             displayMsg(33, "a"); # Progress indicator character
         }
@@ -670,12 +619,10 @@ sub processHREF{
 sub processMAILTO{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /mailto/i)
-    {
+    while($thisExtract =~ /mailto/i){
         $linkText = $thisExtract;
         $linkText =~ /mailto\s*:\s*(.+?)\s/;   # " The double-quote chars in this regex confuses UltraEdits syntax highlighting, but the one at the start of this comment sorts things out
-        if($2)
-        {
+        if($2){
             push(@MAILTO_List, $2."\n");
             displayMsg(33, "a"); # Progress indicator character
         }
@@ -686,8 +633,7 @@ sub processMAILTO{
 sub processLink{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /<link.*href/i)
-    {
+    while($thisExtract =~ /<link.*href/i){
         $thisExtract =~ s/<link.*href/ /i;
         $linkText = $thisExtract;
         $linkText =~ /(\"|\')(.*?)(\"|\')/;
@@ -699,8 +645,7 @@ sub processLink{
 sub processScript{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /<script.*src/i)
-    {
+    while($thisExtract =~ /<script.*src/i){
         $thisExtract =~ s/<script.*src/ /i;
         $linkText = $thisExtract;
         $linkText =~ /(\"|\')(.*?)(\"|\')/;
@@ -712,8 +657,7 @@ sub processScript{
 sub processIMG{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /<img.*src/i)
-    {
+    while($thisExtract =~ /<img.*src/i){
         $thisExtract =~ s/<img.*src/ /i;
         $linkText = $thisExtract;
         $linkText =~ /(\"|\')(.*?)(\"|\')/;
@@ -725,13 +669,11 @@ sub processIMG{
 sub processFormAction{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /<form.*action/i)
-    {
+    while($thisExtract =~ /<form.*action/i){
         $thisExtract =~ s/<form.*action/ /i;
         $linkText = $thisExtract;
         $linkText =~ /(\"|\')(.*?)(\"|\')/;
-        if($2)
-        {
+        if($2){
             push(@FORM_List, $2."\n");
             displayMsg(33, "f"); # Progress indicator character
         }
@@ -742,13 +684,11 @@ sub processFunctionName{
     my $thisExtract = shift||'';
     my $lineNumber  = shift||0;
     my $linkText;
-    while($thisExtract =~ /\bfunction/i)
-    {
+    while($thisExtract =~ /\bfunction/i){
         $linkText = $thisExtract;
         # Search for a function name:
         $linkText =~ /(function\s*\w+\s*\([\w ,]*\))/i;
-        if($1)
-        {
+        if($1){
             displayMsg(33, "/"); # Progress indicator character
             # displayMsg(33, "\nprocessFunctionName, line:$lineNumber: \$1: ".$1."\n");
             # push(@FUNCTION_List_Trad, $1."()");
@@ -766,12 +706,10 @@ sub processAnonMethod{
     my $thisExtract = shift||'';
     my $lineNumber  = shift||0;
     my $linkText;
-    while($thisExtract =~ /\S+\s*:\s*function\s*\(/i)
-    {
+    while($thisExtract =~ /\S+\s*:\s*function\s*\(/i){
         $linkText = $thisExtract;
         $linkText =~ /(\S+)\s*:\s*function\s*\(/;
-        if($1)
-        {
+        if($1){
             displayMsg(33, "-"); # Progress indicator character
             my $safeString = $1; #
             push(@FUNCTION_List_Method, $safeString." Line:".$lineNumber);
@@ -788,12 +726,10 @@ sub processObjectMethod{
     my $thisExtract = shift||'';
     my $lineNumber  = shift||0;
     my $linkText;
-    while($thisExtract =~ /\s\S+?\s*=\s*function\s*?\(/i)
-    {
+    while($thisExtract =~ /\s\S+?\s*=\s*function\s*?\(/i){
         $linkText = $thisExtract;
         $linkText =~ /\s(\S+?)\s*=\s*function\s*?\(/;
-        if($1)
-        {
+        if($1){
             displayMsg(33, "|"); # Progress indicator character
             my $safeString = $1; #
             $safeString .= "()\n";
@@ -811,12 +747,10 @@ sub processNewAnonFunction{
     my $thisExtract = shift||'';
     my $lineNumber  = shift||0;
     my $linkText;
-    while($thisExtract =~ /\s\S+?\s*=\s*new\s+function(\s*)/i)
-    {
+    while($thisExtract =~ /\s\S+?\s*=\s*new\s+function(\s*)/i){
         $linkText = $thisExtract;
         $linkText =~ /\s(\S+?)\s*=\s*new\s+function(\s*)/;
-        if($1)
-        {
+        if($1){
             displayMsg(33, "\\"); # Progress indicator character
             push(@FUNCTION_List_Anon, $1." Line:".$lineNumber);
             $thisExtract =~ s/\s\S+?\s*=\s*new\s+function(\s*)/ /i;
@@ -833,12 +767,10 @@ sub processClosureFunction{
     my $thisExtract = shift||'';
     my $lineNumber  = shift||0;
     my $linkText;
-    while($thisExtract =~ /function/i)
-    {
+    while($thisExtract =~ /function/i){
         $linkText = $thisExtract;
         $linkText =~ /(function\s*\(\s*\))/;
-        if($1)
-        {
+        if($1){
             displayMsg(33, "¬"); # Progress indicator character
             # MJB ToDo: not much point recording the "name" of an anonymous function, so need to do something better than  $1  on the next line:
             # MJB would it be useful to have a unique reference? Is it possible to keep track of multiple references - do we even get the same function listed more than once?
@@ -857,12 +789,10 @@ sub processAnonFunction{
     my $thisExtract = shift||'';
     my $lineNumber  = shift||0;
     my $linkText;
-    while($thisExtract =~ /function/i)
-    {
+    while($thisExtract =~ /function/i){
         $linkText = $thisExtract;
         $linkText =~ /(\bfunction\w+\([\W, ]\))/;
-        if($1)
-        {
+        if($1){
             displayMsg(33, "^"); # Progress indicator character
             # MJB ToDo: not much point recording the "name" of an anonymous function, so need to do something better than  $1  on the next line:
             # MJB would it be useful to have a unique reference? Is it possible to keep track of multiple references - do we even get the same function listed more than once?
@@ -884,23 +814,19 @@ sub processTAG_css{
     my $localTagList = '\b' . join('\b|\b', @bareTagNames) . '\b';
     my $bareTagList  = join('|', @bareTagNames);
 
-    if((length ($thisExtract) > 1) || ($thisExtract =~ /[apq]/i))
-    {
+    if((length ($thisExtract) > 1) || ($thisExtract =~ /[apq]/i)){
         # We need at least a couple of chars for this to be valid, so also need to explicitly check for the single-letter tags
     }else{
         return;
     }
     ## Look for an HTML tag, followed by an opening curly brace, dot, space, colon, hash-mark
     ## Need to try to ensure that _star_ does not match against CSS comments:   /* Comment */
-    while($thisExtract =~ /($localTagList)/i)
-    {
-        if($1)
-        {
+    while($thisExtract =~ /($localTagList)/i){
+        if($1){
             push(@TAG_List, $1);
             displayMsg(6, "TAG found: \"$1\"\n");
             ## Remove whatever we just found:
-            if($1 ne "*")
-            {
+            if($1 ne "*"){
                 # The star operator breaks the following regexp:
                 $thisExtract =~ s/$1//i;
             }else{
@@ -929,13 +855,11 @@ sub processTAG_css{
 sub processCLASS{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /\.[a-zA-Z-_]/i)
-    {
+    while($thisExtract =~ /\.[a-zA-Z-_]/i){
         $thisExtract =~ s/{.*?}/ /i;
         $linkText = $thisExtract;
         $linkText =~ /\.([a-zA-Z-_]+)/;
-        if($1)
-        {
+        if($1){
             push(@CLASS_List, $1);
             $thisExtract =~ s/$1/ /i;
             displayMsg(33, "C"); # Progress indicator character
@@ -947,20 +871,18 @@ sub processCLASS{
 sub processTagCLASS{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /class\s*=\s*('|")[_a-zA-Z0-9- ]+?('|")/i)   # "
+    while($thisExtract =~ /class\s*=\s*('|")[_a-zA-Z0-9- ]+?('|")/i)   # " Keep this comment
     {
         $linkText = $thisExtract;
-        $linkText =~ /class\s*=\s*('|")([_a-zA-Z0-9- ]+?)('|")/;       # "
-        if($2)
-        {
+        $linkText =~ /class\s*=\s*('|")([_a-zA-Z0-9- ]+?)('|")/;       # " Keep this comment
+        if($2){
             # Need to check for a multiple-class definition: (space separated)
             my @classNames = split(" ", $2);
-            foreach (@classNames)
-            {
+            foreach (@classNames){
                 push(@TAG_CLASS_List, $_);
                 displayMsg(33, "."); # Progress indicator character
             }
-            $thisExtract =~ s/class\s*=\s*('|")[_a-zA-Z0-9- ]+?('|")/ /i;    # "
+            $thisExtract =~ s/class\s*=\s*('|")[_a-zA-Z0-9- ]+?('|")/ /i;    # " Keep this comment
         }
     }
 }
@@ -968,14 +890,13 @@ sub processTagCLASS{
 sub processTAG_ID{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /ID\s*=\s*('|").+?('|")/i)                          # "
+    while($thisExtract =~ /ID\s*=\s*('|").+?('|")/i)                          # " Keep this comment
     {
         $linkText = $thisExtract;
-        $linkText =~ /ID\s*=\s*('|")(.+?)('|")/;                              # "
-        if($2)
-        {
+        $linkText =~ /ID\s*=\s*('|")(.+?)('|")/;                              # " Keep this comment
+        if($2){
             push(@TAG_ID_List, $2."\n");
-            $thisExtract =~ s/ID\s*=\s*('|").+?('|")/ /i;                     # "
+            $thisExtract =~ s/ID\s*=\s*('|").+?('|")/ /i;                     # " Keep this comment
             displayMsg(33, "#"); # Progress indicator character
         }
     }
@@ -985,12 +906,10 @@ sub processURLinCSS{
     my $thisExtract = $_;
     my $linkText;
     ## Start with a very simple match:
-    while($thisExtract =~ /url/i)
-    {
+    while($thisExtract =~ /url/i){
         $linkText = $thisExtract;
         $linkText =~ /url\s*\(['"]*([^'"\(\)]+)['"]*\)/;      # ' match the contents of a pair of brackets, following "url", excluding the brackets, and ignoring any quote marks
-        if($1)
-        {
+        if($1){
             push(@URL_List, $1);
             $thisExtract =~ s/.*$1/ /i;      # Remove anything upto and including the matched text
             displayMsg(33, "U");             # Progress indicator character
@@ -1002,13 +921,11 @@ sub processURLinCSS{
 sub processID{
     my $thisExtract = $_;
     my $linkText;
-    while($thisExtract =~ /^\#[a-zA-Z-_]/i)
-    {
+    while($thisExtract =~ /^\#[a-zA-Z-_]/i){
         $thisExtract =~ s/{.*?}/ /i;
         $linkText = $thisExtract;
         $linkText =~ /^\#([a-zA-Z-_]+)/;
-        if($1)
-        {
+        if($1){
             push(@ID_List, $1);
             $thisExtract =~ s/$1/ /i;
             displayMsg(33, "I"); # Progress indicator character
@@ -1018,11 +935,10 @@ sub processID{
 }
 ############################################################################
 sub displayMsg{
-    my $level = shift||'';
+    my $level = shift||100;
     my $msg   = shift||'';
 
-    if($level > $gblLogLevel)
-    {
+    if($level > $gblLogLevel){
         print $msg;
     }
 }
@@ -1073,13 +989,11 @@ sub writeInternalData{
     displayMsg(70, "writeInternalData: \$outFileSpec: $outFileSpec \n");
     checkFullReportPath($outFileSpec);
 
-    unless (open HTML_FILE_OUT, ">$outFileSpec")
-    {
+    unless (open HTML_FILE_OUT, ">$outFileSpec"){
         displayMsg(999, "ERROR 200167: Unable to write to file: $outFileSpec: $!\n");
         return;
     }
-    unless (open DATFILE_IN, $thisFile)
-    {
+    unless (open DATFILE_IN, $thisFile){
         displayMsg(999, "ERROR 20F1CE: Unable to read from file: $thisFile: $!\n");
         return;
     }
@@ -1087,16 +1001,14 @@ sub writeInternalData{
     print HTML_FILE_OUT &getReport_Top( mapDatFileNameToPageTitle($thisFile) );
 
     my @lines = <DATFILE_IN>;
-    foreach (@lines)
-    {
-        if (index($_, $gblFileSignature) != -1)
-        {
+    foreach (@lines){
+        if (index($_, $gblFileSignature) != -1){
             displayMsg(10, "INFO 20F212: \$gblFileSignature found in file: $thisFile\n");
         }else{
 
             ($thisType, $thisValue) = split(":", $_, 2);
-            if($thisValue && (length $thisValue > 2)) # Make sure that we have more than just a line-break
-            {
+            # Make sure that we have more than just a line-break
+            if($thisValue && (length $thisValue > 2)){
                 $displayTxt = $thisValue;              # Un-modified version of file name, for display purposes
                 $thisValue =~ s/\s+$//;               #  Remove a trailing newline/whitespace char, if any exists
                 $thisValue =~ s/[()]//g;             #   Remove any round brackets
@@ -1154,8 +1066,8 @@ sub buildPageBlockList{
     my $thisTitle = shift||'';
     my $thisList  = shift||'';
     my $strOutput = "\n<div class=\"pageBlock\"><H3>".$thisTitle."</H3>";
-    if(length $thisList > 2) # Make sure that we have more than just a line-break
-    {
+    # Make sure that we have more than just a line-break
+    if(length $thisList > 2){
         $strOutput .= "\n".SHRINK_LINK;
         $strOutput .= "\n<UL>".$thisList."</UL>";
     }else{
@@ -1216,42 +1128,33 @@ sub processHTML{
     my @lines = <CURRENTFILE>;
     my $wholeFile = join(" ",@lines);
     @lines = split(">", $wholeFile);
-    foreach (@lines)
-    {
-        if ($_ =~ /(ID)/i)
-        {
+    foreach (@lines){
+        if ($_ =~ /(ID)/i){
             processTAG_ID($_);
         }
-        if ($_ =~ /(class)/i)
-        {
+        if ($_ =~ /(class)/i){
             processTagCLASS($_);
         }
-        if ($_ =~ /(<link.*href)/i)
-        {
+        if ($_ =~ /(<link.*href)/i){
             processLink($_);
         }
-        if ($_ =~ /(<script.*src)/i)
-        {
+        if ($_ =~ /(<script.*src)/i){
             processScript($_);
         }
-        if ($_ =~ /(<img)/i)
-        {
+        if ($_ =~ /(<img)/i){
             processIMG($_);
         }
-        if ($_ =~ /(<form.*action)/i)
-        {
+        if ($_ =~ /(<form.*action)/i){
             processFormAction($_);
         }
 
         ## Next REGEX may be too greedy. MJB 19/01/2009 23:15
         ## On the other hand, it may miss some genuine cases, eg:  "<a  href"  will NOT be matched due to double space
-        if ($_ =~ /(<a.href)/i)
-        {
+        if ($_ =~ /(<a.href)/i){
             processHREF($_);
         }
 
-        if ($_ =~ /(mailto)/i)
-        {
+        if ($_ =~ /(mailto)/i){
             processMAILTO($_);
         }
 
@@ -1266,23 +1169,18 @@ sub processCSS{
     my $localTagList = '\b' . join('\b|\b', @bareTagNames) . '\b';
     # my $bareTagList  = join('|', @bareTagNames);
 
-    foreach (@lines)
-    {
-        if ($_ =~ /url/i )
-        {
+    foreach (@lines){
+        if ($_ =~ /url/i ){
             processURLinCSS($_);
         }
-        if ($_ =~ /^(\#)/i)
-        {
+        if ($_ =~ /^(\#)/i){
             processID($_);
         }
-        if ($_ =~ /(\.)/i)
-        {
+        if ($_ =~ /(\.)/i){
             processCLASS($_);
         }
         ## if ($_ =~ /($localTagList)( |\.|{|\#|:)/i)
-        if ($_ =~ /($localTagList)( |,|\.|{|\#|:)/i)
-        {
+        if ($_ =~ /($localTagList)( |,|\.|{|\#|:)/i){
             processTAG_css($_);
         }
     }
@@ -1304,13 +1202,11 @@ sub processJavascript{
     my @lines = <CURRENTFILE>;
     my $lineNumber = 0;
     my $temp = '';
-    foreach (@lines)
-    {
+    foreach (@lines){
         $lineNumber++;
         $temp = $_;
         $temp =~ s/\n$//;
         $temp =~ s/\r$//;
-
 
         #  = new function
         #  = new Function
@@ -1371,8 +1267,7 @@ sub writePageData_HTML{
     my $outFileSpec = $gblMainDatFolder."/".$shortFileSpec;
     checkDatPath($shortFileSpec);
 
-    unless (open OUTFILE_HTML, ">$outFileSpec")
-    {
+    unless (open OUTFILE_HTML, ">$outFileSpec"){
         displayMsg(999, "ERROR 20F203: Unable to write to $outFileSpec: $!\n");
         return;
     }
@@ -1403,8 +1298,7 @@ sub writePageData_CSS{
     my $outFileSpec = $gblMainDatFolder."/".$shortFileSpec;
     checkDatPath($shortFileSpec);
 
-    unless (open OUTFILE_CSS, ">$outFileSpec")
-    {
+    unless (open OUTFILE_CSS, ">$outFileSpec"){
         displayMsg(999, "ERROR 20F204: Unable to write to $outFileSpec: $!\n");
         return;
     }
@@ -1427,8 +1321,7 @@ sub writePageData_JS{
     my $outFileSpec = $gblMainDatFolder."/".$shortFileSpec;
     checkDatPath($shortFileSpec);
 
-    unless (open OUTFILE_JS, ">$outFileSpec")
-    {
+    unless (open OUTFILE_JS, ">$outFileSpec"){
         displayMsg(999, "ERROR 20F205: Unable to write to $outFileSpec: $!\n");
         return;
     }
@@ -1451,8 +1344,7 @@ sub makeHTML_Page{
     my $thisTitle = shift||'';
     my $outFileSpec = mapReportName($thisFile);
     displayMsg(20, "200169 Creating report file: $outFileSpec\n");
-    unless (open OUTFILE_PAGE, ">$outFileSpec")
-    {
+    unless (open OUTFILE_PAGE, ">$outFileSpec"){
         displayMsg(999, "ERROR 20016A: Unable to write to $outFileSpec: $!\n");
         return;
     }
@@ -1469,9 +1361,7 @@ sub getHTML_Header{
     my $output    = "";
     if (!$thisTitle) { $thisTitle = "Site Documentation"; }
 
-    $output .= "<!DOCTYPE HTML>";
-    $output .= "\n<head>";
-    $output .= "\n<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>";
+    $output .= "<!DOCTYPE HTML>\n<head>\n<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>";
     $output .= "\n<title>";
     $output .= $thisTitle;
     $output .= " - siteDoc version";
@@ -1492,16 +1382,14 @@ sub getHTML_Footer{
     my $isHomePage = shift;
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime time;
     my $actYear    = $year + 1900;
-    if($isHomePage)
-    {
+    if($isHomePage){
         $output .= "\n<H3>End of main index page.</H3>";
     }else{
         $output .= "\n<H3><a href=\"/\">Back to main index</a></H3>";
     }
     $output .= "\n<H2>Produced on: $gblDateStamp</H2>";
     $output .= "\n<div id='divCopyright'>Created by SiteDoc.pl &#169; Copyright Mike Brockington 2007 - ".$actYear." &nbsp; All Rights Reserved</div>";
-    $output .= "\n</body>";
-    $output .= "</html>";
+    $output .= "\n</body></html>";
 
     return $output;
 }
@@ -1793,13 +1681,12 @@ sub getReportHREFLink{
     my $shortURL   = shift||$thisString;
     my $infoPageURL = '';
 
-    if( $thisString =~ m/^\#/ )                        # Check if the URL starts with a  # character
-    {
+    # Check if the URL starts with a  # character
+    if( $thisString =~ m/^\#/ ){
         return $thisString;
     }else{
         # Decide if this is an internal or external URL:
-        if( $thisString !~ m/^http/i )
-        {
+        if( $thisString !~ m/^http/i ){
             if( $thisString !~ m/^\// )    # No leading slash means this is a relative URL
             {
                 return $thisString;        # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
@@ -1821,11 +1708,12 @@ sub getIMGLink{
     my $thisString = shift||'';
     my $shortURL   = shift||$thisString;
 
-    # Decide if this is an internal or external URL:
-    if( $thisString !~ m/^http/i )
-    {
-        if( $thisString !~ m/^\// )    # No leading slash means this is a relative URL
-        {
+    # Decide if this is an FQDN:
+    # Assumes that we are only dealing with HTTP and HTTPS links
+    # MJB ToDo: enhance to handle FTP / RTSMP / etc. if needed?
+    if( $thisString !~ m/^http/i ){
+        if( $thisString !~ m/^\// ){
+            # No leading slash means this is a relative URL
             # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
             $thisString = $configValues{"testRoot"}."\/".$thisString;
             return getReportLinkIMG($thisString, $shortURL);
@@ -1836,7 +1724,8 @@ sub getIMGLink{
         }
     }else{
         # This is an FQDN URL, so return as-is:
-        return getReportLinkIMG($thisString, $shortURL);  # ToDo: shorten $shortURL down to just the file name?
+        return getReportLinkIMG($thisString, $shortURL);
+        # ToDo: shorten $shortURL down to just the file name?
         # ToDo: Also need to check whether an absolute URL is actually part of the server that we are trying to document. MJB 21/03/2009
     }
     return "EXCEPTION: 20F1F4 (\$thisString: '$thisString')";
@@ -1850,11 +1739,12 @@ sub getReportJSFILELink{
     my $thisString = shift||'';
     my $shortURL   = shift||$thisString;
 
-    # Decide if this is an internal or external URL:
-    if( $thisString !~ m/^http/i )
-    {
-        if( $thisString !~ m/^\// )    # No leading slash means this is a relative URL
-        {
+    # Decide if this is an FQDN:
+    # Assumes that we are only dealing with HTTP and HTTPS links
+    # MJB ToDo: enhance to handle FTP / RTSMP / etc. if needed?
+    if( $thisString !~ m/^http/i ){
+        if( $thisString !~ m/^\// ){
+            # No leading slash means this is a relative URL
             return $thisString;        # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
         }else{
             # Must be an absolute URL:
@@ -1863,7 +1753,8 @@ sub getReportJSFILELink{
         }
     }else{
         # This is an FQDN URL, so return as-is:
-        return getReportLinkJSFile($thisString, $shortURL);  # ToDo: shorten $shortURL down to just the file name?
+        return getReportLinkJSFile($thisString, $shortURL);
+        # ToDo: shorten $shortURL down to just the file name?
         # ToDo: Also need to check whether an absolute URL is actually part of the server that we are trying to document. MJB 21/03/2009
     }
     return "EXCEPTION: 20F1EF (\$thisString: '$thisString')";
@@ -1876,12 +1767,14 @@ sub getReportFORMFLink{
     my $thisString = shift||'';
     my $shortURL   = shift||$thisString;
 
-    # Decide if this is an internal or external URL:
-    if( $thisString !~ m/^http/i )
-    {
-        if( $thisString !~ m/^\// )    # No leading slash means this is a relative URL
-        {
-            return $thisString;        # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
+    # Decide if this is an FQDN:
+    # Assumes that we are only dealing with HTTP and HTTPS links
+    # MJB ToDo: enhance to handle FTP / RTSMP / etc. if needed?
+    if( $thisString !~ m/^http/i ){
+        if( $thisString !~ m/^\// ){
+            # No leading slash means this is a relative URL
+            return $thisString;
+            # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
         }else{
             # Must be an absolute URL:
             $thisString = $configValues{"testRoot"}.$thisString;
@@ -1889,7 +1782,8 @@ sub getReportFORMFLink{
         }
     }else{
         # This is an FQDN URL, so return as-is:
-        return getReportLinkFORM($thisString, $shortURL);  # ToDo: shorten $shortURL down to just the file name?
+        return getReportLinkFORM($thisString, $shortURL);
+        # ToDo: shorten $shortURL down to just the file name?
         # ToDo: Also need to check whether an absolute URL is actually part of the server that we are trying to document. MJB 21/03/2009
     }
     return "EXCEPTION: 20F1F1 (\$thisString: '$thisString')";
@@ -1902,12 +1796,14 @@ sub getReportCSSFILELink{
     my $thisString = shift||'';
     my $shortURL   = shift||$thisString;
 
-    # Decide if this is an internal or external URL:
-    if( $thisString !~ m/^http/i )
-    {
-        if( $thisString !~ m/^\// )    # No leading slash means this is a relative URL
-        {
-            return $thisString;        # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
+    # Decide if this is an FQDN:
+    # Assumes that we are only dealing with HTTP and HTTPS links
+    # MJB ToDo: enhance to handle FTP / RTSMP / etc. if needed?
+    if( $thisString !~ m/^http/i ){
+        if( $thisString !~ m/^\// ){
+            # No leading slash means this is a relative URL
+            # MJB ToDo: Work out the current folder structure, and build this into an absolute URL.
+            return $thisString;
         }else{
             # Must be an absolute URL:
             $thisString = $configValues{"testRoot"}.$thisString;
@@ -1915,7 +1811,8 @@ sub getReportCSSFILELink{
         }
     }else{
         # This is an FQDN URL, so return as-is:
-        return getReportLinkCSSfile($thisString, $shortURL);  # ToDo: shorten $shortURL down to just the file name?
+        return getReportLinkCSSfile($thisString, $shortURL);
+        # ToDo: shorten $shortURL down to just the file name?
         # ToDo: Also need to check whether an absolute URL is actually part of the server that we are trying to document. MJB 21/03/2009
     }
     return "EXCEPTION: 20F1F2 (\$thisString: '$thisString')";
@@ -1930,11 +1827,9 @@ sub getReportURLLink{
     displayMsg(8, "getReportURLLink: \$thisString = $thisString\n");
 
     # Decide if this is an internal or external URL:
-    if( $thisString !~ m/^http/i )
-    {
+    if( $thisString !~ m/^http/i ){
         # This is NOT an FQDN URL, so need to massage it a little:
-        if( $thisString !~ m/^\// )
-        {
+        if( $thisString !~ m/^\// ){
             # No leading slash means this is a relative URL
             # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
             return getLiveURL($thisString);
@@ -1957,8 +1852,7 @@ sub getReportURLLink{
 sub getDataLink{
     my $thisString = shift;
     my $currentLinkType = shift;
-    if (!$thisString)
-    {
+    if (!$thisString){
         displayMsg(80, "Warning: 20F16C No data passed to sub getDataLink()\n");
         return;
         # Can't do anything if we don't have any text
@@ -1966,8 +1860,7 @@ sub getDataLink{
         displayMsg(30, "Sub: getDataLink( $thisString )\n");
     }
     my $linkLocation = $thisString;
-    if($linkLocation eq "*")
-    {
+    if($linkLocation eq "*"){
         $linkLocation = "STAR";     # A 'raw' asterisk causes all sorts of problems
     }
     $linkLocation =~ s/Line://g;    # Remove line number marker, but leave the actual line number
@@ -1983,8 +1876,7 @@ sub getDataLine{
     my $thisLineNum = 0;
     my $temp = "";
 
-    if (!$thisString)
-    {
+    if (!$thisString){
         displayMsg(80, "Warning 20F206: No data passed to sub getDataLine()\n");
         return 0;
         # Can't do anything if we don't have any text
@@ -2004,8 +1896,7 @@ sub mapDatFileNameToPageTitle{
     my $thisFile = shift||'';
     my $thisID   = extractFileID($thisFile)||'';
     my $currentLinkType = shift||'';
-    if($thisID > 0)
-    {
+    if($thisID > 0){
         my $thisName = $gblFileArray[$thisID - 1] || "20F18E";
 
         displayMsg(80, "Sub: mapDatFileNameToPageTitle(\$thisID = $thisID");
@@ -2055,11 +1946,9 @@ sub deDupeArray{
     my %seen = ();
     my $item;
 
-    while ($item = shift)
-    {
+    while ($item = shift){
         $item =~ s/[\r\n]//;   # Sometimes we have a trailing line-break, which confuses the next comparison
-        unless($seen{$item})
-        {
+        unless($seen{$item}){
             $seen{$item} = 1;
         }
     }
@@ -2085,11 +1974,10 @@ sub checkConfig{
 ############################################################################
 # Set required values etc.
 sub readConfig{
-    open (CONFIG_FILE, CONFIG_FILE_NAME) || die "Fatal Error 20F16E: Unable to read from '".CONFIG_FILE_NAME."': $!\n";
+    open (CONFIG_FILE, CONFIG_FILE_NAME) || die "ERROR 20F16E: Unable to read config: '".CONFIG_FILE_NAME."': $!\n";
     ## Global:
     ## $configValues;
-    while(<CONFIG_FILE>)
-    {
+    while(<CONFIG_FILE>){
         chomp;
         s/#.*//;
         s/^\s+//;
@@ -2126,8 +2014,7 @@ sub checkReportPath{
     @folders = split /[\\\/]/, $endOfPath;          # Split on back or forward slash
     my $pathName = "";
     my $currentFolder = "";
-    foreach $pathItem ( @folders )
-    {
+    foreach $pathItem ( @folders ){
         $pathName = join "/", $pathName,$pathItem;
         $pathName =~ s/^\///;      # Remove any leading slash
         $currentFolder = $startPath."/".$pathName;
@@ -2151,8 +2038,7 @@ sub checkFullReportPath{
     my @folders = split /[\\\/]/, $endOfPath;                      #     Split on back or forward slash
     my $pathName = "";
     my $currentFolder = "";
-    foreach $pathItem ( @folders )
-    {
+    foreach $pathItem ( @folders ){
         $pathName = join "/", $pathName,$pathItem;
         $pathName =~ s/^\///;      # Remove any leading slash
         $currentFolder = $startPath."/".$pathName;
@@ -2170,16 +2056,14 @@ sub checkReportDataPath{
     my $endOfPath = shift(@_);
     my $startPathLen = length($startPath);
     my $temp = substr($startPath, 0, $startPathLen);
-    if($temp eq $startPath)
-    {
+    if($temp eq $startPath){
         $endOfPath = substr($endOfPath, $startPathLen, length($endOfPath) );
         displayMsg(10, "\$endOfPath has now become: $endOfPath\n");
     }
     $endOfPath =~ s/[\/\\][^\/\\]+\.[^\/\\]+$//;       # Remove any filename.ext at the end of the string
     my @folders = split /[\\\/]/, $endOfPath;          # Split on back or forward slash
     my $currentFolder = "";
-    foreach $pathItem ( @folders )
-    {
+    foreach $pathItem ( @folders ){
         $currentFolder = join "/", $currentFolder,$pathItem;
         $currentFolder =~ s/^\///;      # Remove any leading slash
         displayMsg(10, "checkReportDataPath: $currentFolder\n");
@@ -2199,8 +2083,7 @@ sub checkDatPath{
     my @folders = split /[\\\/]/, $endOfPath;      # Split on back or forward slash
     my $pathName = "";
     my $currentFolder = "";
-    foreach $pathItem ( @folders )
-    {
+    foreach $pathItem ( @folders ){
         $pathName = join "/", $pathName, $pathItem;
         $pathName =~ s/^\///;                   # Remove any leading slash
         $currentFolder = $startPath."/".$pathName;
@@ -2213,8 +2096,7 @@ sub checkDatPath{
 # Create required folders if they no not exist already
 sub ensureFolderExists{
     my $pathName = shift||'';
-    if (-w $pathName)
-    {
+    if (-w $pathName){
         displayMsg(10, "Folder found: $pathName\n");
     } else {
         displayMsg(20, "Creating folder: $pathName\n");
@@ -2228,14 +2110,12 @@ sub getHTML_Top{
     my $strTitle = shift;
     my $output = "";
 
-    if(! $strTitle)
-    {
+    if(! $strTitle){
         $strTitle = "SiteDoc Documentation for ".$configValues{"siteName"};
     }
     $output .= getHTML_Header($strTitle);
     $output .= "\n<body>";
-    if($configValues{"logolocation"})
-    {
+    if($configValues{"logolocation"}){
         $output .= "<a href=\"/\" title=\"Back to main index\">";
         $output .= "<img class='siteLogo' src='".$configValues{"logolocation"}."'>";
         $output .= "</a>";
@@ -2489,8 +2369,7 @@ sub getReportFromDat{
     my $thisDATfile = shift;
     my $thisFile = $thisDATfile;
 
-    if ($thisFile)
-    {
+    if ($thisFile){
         $thisFile =~ s/.*\\dats/\/files/i;   # Replace everything up to, and including "\dats\" with "/files/"
         $thisFile =~ s/\.dat/\.html/i;       # Change file extention from  .dat   to  .html
     }else{
@@ -2505,8 +2384,7 @@ sub getReportFromDat{
 sub getFileFromDat{
     my $thisDATfile = shift;
     my $thisFile = "";
-    if ($thisDATfile)
-    {
+    if ($thisDATfile){
         $thisFile = getFileID($thisDATfile);
     }
     displayMsg(59, "Sub: getFileFromDat( \$thisDATfile: $thisDATfile => $thisFile)\n");
@@ -2520,15 +2398,13 @@ sub getFileID{
     my $thisID = "";
     my $thisFile;
 
-    if (!$thisInput)
-    {
+    if (!$thisInput){
         $thisFile = "";
         displayMsg(75, "WARNING: 20F1D8 getFileID() - \$thisInput is blank\n");
     }else{
         $thisID = getFileName($thisInput);   # Remove all of the path info
         $thisID =~ s/\..*//;                 # Remove the dot and extension
-        if($thisID =~ /[^0-9a-f]+/i)
-        {
+        if($thisID =~ /[^0-9a-f]+/i){
             displayMsg(90, "ERROR: 20F1D9 \$thisID is not a valid Hex Number: $thisID\n");
             return "";  # Not a valid ID
         }else{
@@ -2548,8 +2424,7 @@ sub getFileNameTwo{
     my $thisInput = shift||'';
     my $thisID = 0;
     displayMsg(99, "getFileNameTwo: (\$thisInput: $thisInput)\n");
-    foreach (@gblFileArray)
-    {
+    foreach (@gblFileArray){
         if(lc($thisInput) eq lc($gblFileArray[$thisID]) )  # case-insensitive compare
         {
             return $thisID;
@@ -2580,17 +2455,15 @@ sub getSecondPassData{
     my $thisType    = "";
     my $thisValue   = "";
 
-    unless (open DATAFILE, $thisFile)
-    {
+    unless (open DATAFILE, $thisFile){
         displayMsg(999, "ERROR 20F1CF: Unable to read from $thisFile: $!\n");
         return;
     }
     my @lines = <DATAFILE>;
-    foreach (@lines)
-    {
+    foreach (@lines){
         ($thisType, $thisValue) = split(":", $_, 2);
-        if($thisValue)                 # Make sure that we have at least some text to match against in the next block
-        {
+        # Make sure that we have at least some text to match against in the next block
+        if($thisValue){
             if($thisType eq "CLASS")
                 { push(@gblCLASSlist, $thisValue) }
 
@@ -2649,33 +2522,26 @@ sub processDataStore{
 
     displayMsg(20, "About to processDataStore(\"$thisFile\", looking for:\"$thisMarker\")\n");
 
-    if(-d)
-    {
+    if(-d){
         # Nothing to be done, apart from moving on
         displayMsg(10, "processDataStore: Ignoring Folder: ".$thisFile."\n");
     }else{
-        unless (open CURRENTFILE, $thisFile)
-        {
+        unless (open CURRENTFILE, $thisFile){
             displayMsg(999, "ERROR 20F208: processDataStore: Unable to read from $thisFile: $!\n");
             return;
         }
-        if (checkDatFileFormat($thisFile) )
-        {
+        if (checkDatFileFormat($thisFile) ){
             displayMsg(20, "processDataStore: Reading Data File: ".$thisFile."\n");
-            while (<CURRENTFILE>)
-            {
+            while (<CURRENTFILE>){
                 chomp;
-                if (index($_, $gblFileSignature) != -1)
-                {
+                if (index($_, $gblFileSignature) != -1){
                     displayMsg(99, "INFO: \$gblFileSignature found in file: $thisFile\n");
                 }else{
-                    if (checkDatFileFormat($_) )
-                    {
+                    if (checkDatFileFormat($_) ){
                         @fields = split(":", $_, 2);
 
                         my $tempUnderscore = $_;
-                        if(pop @fields eq $thisMarker)
-                        {
+                        if(pop @fields eq $thisMarker){
                             close CURRENTFILE;  # No need to keep searching this DAT file
                             displayMsg(30, "processDataStore found \"$thisMarker\" in:$thisFile \n");
                             $gblCurrentOutput = $gblCurrentOutput.mapDatFileNameToHTMLlink($thisFile);
@@ -2739,22 +2605,19 @@ sub indexInternalData{
         my $item;
         my $new = 1;
 
-        if (index($datLine, $gblFileSignature) != -1)
-        {
+        if (index($datLine, $gblFileSignature) != -1){
             displayMsg(10, "INFO 20F215: \$gblFileSignature found in file: $thisFile\n");
         }else{
-            foreach $item(@gblResourceList)
-            {
-                # Unlikely that anything that we compare is case-sensitive
+            foreach $item(@gblResourceList){
+                # Unlikely that anything that we compare is case-sensitive, so push both sides to lower-case:
                 # MJB ToDo: make the next comparison case-sensitive for anything that needs it:
-                if(lc($datLine) eq lc($item) )
-                {
+                # (nothing found so far: 09/10/2014 16:37:49 )
+                if(lc($datLine) eq lc($item) ){
                     $new = 0;
                     last;
                 }
             }
-            if($new)
-            {
+            if($new){
                 push(@gblResourceList, $datLine);
             }
         }
@@ -2766,15 +2629,13 @@ sub finaliseInternalData{
     my $resourceCounter = 0;
     my $outFileSpec = $configValues{"reportBase"}."/lists/";
 
-    unless (open RESOURCE_FILE, ">$gblResourceListSpec")
-    {
+    unless (open RESOURCE_FILE, ">$gblResourceListSpec"){
         displayMsg(999, "ERROR 20F1CD: Unable to write to file: $outFileSpec: $!\n");
         return;
     }
     print RESOURCE_FILE $gblFileSignature;
 
-    foreach (@gblResourceList)
-    {
+    foreach (@gblResourceList){
         if($_){
             if ($_ =~ /^\s*$/) {
                 # String contains 0 or more white-space character and nothing else
