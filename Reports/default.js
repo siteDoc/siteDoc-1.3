@@ -10,7 +10,7 @@ function shrinkList(parentNode){
     // alert("First item is:"+thisList[0]);
     var initialHeight = thisBox.offsetHeight;
     // alert("Initial Height: " + initialHeight);
-    thisBox.style.maxHeight = '10px';
+    thisBox.style.maxHeight = '2px';
     thisBox.style.overflow = 'hidden';
   }else{
     alert("This node ("+parentNode+") is not valid");

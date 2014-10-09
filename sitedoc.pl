@@ -1,11 +1,11 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 ############################################################################
 ##
 ##  siteDoc -- Program to recursively parse HTML, JS and CSS files
-##             Identifies and records usage of variables, classes, images
+##             Identifies and records usage of variables, classes, images etc.
 ## Copyright:  Mike Brockington  for  calcResult
-##             All rights reserved. &copy; 24/07/2014
+##             All rights reserved. &copy; 09/10/2014
 ##
 ##             Inspired by JSDoc, see: http://jsdoc.sourceforge.net/
 ##             Some sections based on examples from the "PERL Cookbook" from O'Reilly
@@ -22,6 +22,7 @@
 ## 24/07/2014 Now running on Win7
 ## 24/09/2014 Line numbering reference added for JS functions
 ## 29/09/2014 List of HTML tags condensed into a single reference, rather than spread out throughout the program
+## 08/10/2014 First entered on to GitHub
 
 
 ## ToDo:
@@ -49,6 +50,9 @@ use autodie;
 # The config file MUST live in the same folder as this file.
 use constant CONFIG_FILE_NAME         => dirname(abs_path($0))."/sitedoc.config";
 use constant APP_VERSION              => "1.3";
+
+
+use constant SHRINK_LINK => "<a href=\"#\" onclick=\"shrinkList(this.parentNode);return false;\">Shrink</a>&nbsp; this list <a href=\"#\" onclick=\"expandList(this.parentNode);return false;\">Expand</a>";
 
 ############################################################################
 
@@ -145,7 +149,7 @@ print MAIN_DATA_FILE $gblFileSignature;
 
 my $tempVar = getHTML_Top("SiteDoc Documentation for ".$configValues{"siteName"});
 print INDEX_FILE $tempVar;
-print INDEX_FILE "\n<a href=\"#\" onclick=\"shrinkList(this.parentNode);return false;\">Shrink</a>&nbsp; this list <a href=\"#\" onclick=\"expandList(this.parentNode);return false;\">Expand</a>";
+print INDEX_FILE "\n".SHRINK_LINK;
 print INDEX_FILE "\n<UL>";
 
 ## Start processing:
@@ -1093,7 +1097,7 @@ sub writeInternalData{
             ($thisType, $thisValue) = split(":", $_, 2);
             if($thisValue && (length $thisValue > 2)) # Make sure that we have more than just a line-break
             {
-                $displayTxt = $thisValue;    # Un-modified version of file name, for display purposes
+                $displayTxt = $thisValue;              # Un-modified version of file name, for display purposes
                 $thisValue =~ s/\s+$//;               #  Remove a trailing newline/whitespace char, if any exists
                 $thisValue =~ s/[()]//g;             #   Remove any round brackets
                 $thisValue =~ s/[^a-zA-Z0-9]/_/g;   #    Replace non-alpha chars with underscores
@@ -1112,7 +1116,7 @@ sub writeInternalData{
                 if($thisType eq "CLASS")
                     { $CLASSlist .= "\n<li>".getNonFileLink($thisValue, $displayTxt, "css/CLASS")."</li>"; }
                 if($thisType eq "URL")
-                    { $URLlist .= "\n<li>".getReportURLLink($thisValue, $displayTxt)."</li>"; }
+                    { $URLlist .= "\n<li>".getReportURLLink($displayTxt)."</li>"; }
                 if($thisType eq "ID")
                     { $IDlist .= "\n<li>".getNonFileLink($thisValue, $displayTxt, "css/ID")."</li>"; }
                 if($thisType eq "TAG")
@@ -1152,7 +1156,7 @@ sub buildPageBlockList{
     my $strOutput = "\n<div class=\"pageBlock\"><H3>".$thisTitle."</H3>";
     if(length $thisList > 2) # Make sure that we have more than just a line-break
     {
-        $strOutput .= "\n<a href=\"#\" onclick=\"shrinkList(this.parentNode);return false;\">Shrink</a>&nbsp; this list <a href=\"#\" onclick=\"expandList(this.parentNode);return false;\">Expand</a>";
+        $strOutput .= "\n".SHRINK_LINK;
         $strOutput .= "\n<UL>".$thisList."</UL>";
     }else{
         $strOutput .= "\n<p><i>None</i></p>";
@@ -1587,21 +1591,18 @@ sub mapHREFtoReportName{
     my $thisURL = shift||'';
     my $finalStr = "";
 
-    displayMsg(99, "mapHREFtoReportName: \($thisURL\)\n");
+    displayMsg(9, "mapHREFtoReportName: \($thisURL\)\n");
 
-    my $baseDir = $configValues{"testRoot"};
-    $baseDir =~ s/\/$//;             # Remove trailing slash if it exists
     $thisURL =~ s/^\///;             # Remove leading slash if it exists
     $thisURL =~ s/\.(\w*)$/-$1/;     # Replace trailing file-extension dot with a hyphen
 
-    $finalStr = $baseDir."\/files\/".$thisURL."\.html";
+    $finalStr = "/files/".$thisURL."\.html";
 
 # MJB probably need to insert a bit more path, eg:
-#    $finalStr = $baseDir."\/files\/URLS\/".$thisURL."\.html";
-#                                   ^^^^
+#    $finalStr = "/files/URLS/".$thisURL."\.html";
+#                        ^^^^
 
-    displayMsg(99, "mapHREFtoReportName \$finalStr: \"$finalStr\"\n");
-
+    displayMsg(9, "mapHREFtoReportName \$finalStr: \"$finalStr\"\n");
     return $finalStr;
 }
 ############################################################################
@@ -1623,7 +1624,7 @@ sub mapShortDatFileName{
 
     displayMsg(5, "mapShortDatFileName inter: $thisDatFile\n");
 
-    return $configValues{"reportBase"}."\\files\\".$thisDatFile.".html";
+    return $configValues{"reportBase"}."/files/".$thisDatFile.".html";
 }
 ############################################################################
 # Take a filename and path in the temp area
@@ -1727,11 +1728,16 @@ sub getReportLinkCSSfile{
 ############################################################################
 # Create a hyperlink based on the given strings
 # General Version to link to files that are part of the documented server
-sub getReportLinkURL{
+sub getLiveURL{
     my $thisHREF  = shift||'';
-    my $thisTitle = shift||'';
+    my $strOutput = '';
 
-    return "<a href='".$thisHREF."'>".$thisTitle." (xii 6) </a>";
+    displayMsg(9, "getLiveURL: \$thisHREF = $thisHREF\n");
+
+    $strOutput .= "$thisHREF - ";
+    $strOutput .= "<a href='".$thisHREF."' rel='external'>Live Resource (xxi) </a>";
+
+    return $strOutput;
 }
 
 ############################################################################
@@ -1763,6 +1769,7 @@ sub getInfoPageURL{
     my $thisString = shift||'';
 
     # Massage the provided URL:
+    $thisString =~ s{^#}{_};               #  Replace a leading hash char, if it exists
     $thisString =~ s{^/}{};                #  Remove a leading slash, if it exists
     $thisString =~ s/\s+$//;               #  Remove a trailing newline/whitespace char, if any exists
     displayMsg(99, "getInfoPageURL: \"$thisString\"\n");
@@ -1772,11 +1779,11 @@ sub getInfoPageURL{
     # Find this file in @gblFileArray:
     my $index = getFileNameTwo($fullURL);
     my $pathPrefix = getFileClass($thisString);
+    displayMsg(99, "getInfoPageURL: \$index: \"$index\"\n");
 
     ## ToDo: MJB write something appropriate for when we get -1 returned by getFileNameTwo()
-    return $configValues{"reportBase"}."\\files\\".$pathPrefix."\\".getFileAndFolderFromID($index + 1).".html";
+    return $configValues{"reportBase"}."/files/".$pathPrefix."/".getFileAndFolderFromID($index + 1).".html";
 }
-
 
 ############################################################################
 # Create a hyperlink based on the given string
@@ -1784,9 +1791,7 @@ sub getInfoPageURL{
 sub getReportHREFLink{
     my $thisString = shift||'';
     my $shortURL   = shift||$thisString;
-    my $infoPageURL = getInfoPageURL($shortURL);    # Map the original file name to a reportID
-
-    displayMsg(81, "getReportHREFLink \$infoPageURL = ".$infoPageURL."\n");
+    my $infoPageURL = '';
 
     if( $thisString =~ m/^\#/ )                        # Check if the URL starts with a  # character
     {
@@ -1800,6 +1805,8 @@ sub getReportHREFLink{
                 return $thisString;        # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
             }
             $thisString = $configValues{"baseURL"}.$thisString;
+            $infoPageURL = getInfoPageURL($shortURL);    # Map the original file name to a reportID
+            displayMsg(81, "getReportHREFLink \$infoPageURL = ".$infoPageURL."\n");
             return getReportLinkHREF($thisString, "Link to Live")." $shortURL ".getReportLinkHREF($infoPageURL, "Info Page (xix)");
         }
         # ToDo: Also need to check whether an absolute URL is actually part of the server that we are trying to document. MJB 21/03/2009
@@ -1916,10 +1923,11 @@ sub getReportCSSFILELink{
 ############################################################################
 # Create a hyperlink based on the given string
 # where input is the contents of a: URL()  link
-# Probably a local resource, so need to try to link to a data page
+# Probably a local resource, so try to link to the live URL
 sub getReportURLLink{
     my $thisString = shift||'';
-    my $shortURL   = shift||$thisString;
+
+    displayMsg(8, "getReportURLLink: \$thisString = $thisString\n");
 
     # Decide if this is an internal or external URL:
     if( $thisString !~ m/^http/i )
@@ -1929,15 +1937,15 @@ sub getReportURLLink{
         {
             # No leading slash means this is a relative URL
             # ToDo: Work out the current folder structure, and build this into an absolute URL.  MJB 20/03/2009
-            return $thisString;
+            return getLiveURL($thisString);
         }else{
             # Looks like an absolute URL:
             $thisString = $configValues{"testRoot"}.$thisString;
-            return getReportLinkURL($thisString, $shortURL);
+            return getLiveURL($thisString);
         }
     }else{
         # This is an FQDN URL, so return as-is:
-        return getReportLinkURL($thisString, $shortURL);  # ToDo: shorten $shortURL down to just the file name?
+        return getLiveURL($thisString);  # ToDo: shorten $shortURL down to just the file name?
         # ToDo: Also need to check whether an absolute URL is actually part of the server that we are trying to document. MJB 21/03/2009
     }
     return "EXCEPTION: 20F1F3 (\$thisString: '$thisString')";
