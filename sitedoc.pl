@@ -226,7 +226,7 @@ sub processData{
     }else{
         unless (open CURRENTFILE, $thisFile)
         {
-            displayMsg(90, "Unable to read from $thisFile: $!\n");
+            displayMsg(90, "ERROR 20F20B: Unable to read from $thisFile: $!\n");
             return;
         }
         if (checkDatFileFormat($thisFile) )
@@ -254,14 +254,14 @@ sub preProcessData{
 
         ## Count the number of files in this folder.
         ## May include non-files depending on file system
-        opendir my $dh, $thisFile or displayMsg(99, "ERROR processData(): Can't opendir '$thisFile': $!");
+        opendir my $dh, $thisFile or displayMsg(99, "ERROR 20F20C: processData(): Can't opendir '$thisFile': $!");
         my $fileCount = scalar grep { -f "$thisFile/$_" } readdir $dh;
-        closedir $dh or displayMsg(50, "WARNING processData(): Can't closedir: $!");
+        closedir $dh or displayMsg(50, "WARNING 20F20D: processData(): Can't closedir: $!");
         displayMsg(55, "  Folder contains: ".$fileCount." files\n");
     }else{
         unless (open CURRENTFILE, $thisFile)
         {
-            displayMsg(999, "Unable to read from $thisFile: $!\n");
+            displayMsg(999, "ERROR 20F1FD: Unable to read from $thisFile: $!\n");
             return;
         }
         if (checkDatFileFormat($thisFile) )
@@ -289,14 +289,14 @@ sub reProcessData{
 
         ## Count the number of files in this folder.
         ## May include non-files depending on file system
-        opendir my $dh, $thisFile or displayMsg(99, "ERROR processData(): Can't opendir '$thisFile': $!");
+        opendir my $dh, $thisFile or displayMsg(99, "ERROR 20F20E: processData(): Can't opendir '$thisFile': $!");
         my $fileCount = scalar grep { -f "$thisFile/$_" } readdir $dh;
-        closedir $dh or displayMsg(50, "WARNING processData(): Can't closedir: $!");
+        closedir $dh or displayMsg(50, "WARNING 20F20F: processData(): Can't closedir: $!");
         displayMsg(55, "  Folder contains: ".$fileCount." files\n");
     }else{
         unless (open CURRENTFILE, $thisFile)
         {
-            displayMsg(999, "20F141: Second Pass: Unable to read from $thisFile: $!\n");
+            displayMsg(999, "ERROR 20F141: Second Pass: Unable to read from $thisFile: $!\n");
             return;
         }
         if (checkDatFileFormat($thisFile) )
@@ -352,7 +352,7 @@ sub buildDataReport{
         $gblTruncatedFileCount++;
         my $requiredLinkLength = ($configValues{"maxFileNameLength"} - length($gblTruncatedFileCount));
         my $tempLink = substr($thisLink, 0, $requiredLinkLength);
-        displayMsg(30, "INFO: \$thisLink truncated to new length: ".length($tempLink)."\n");
+        displayMsg(30, "INFO 20F210: \$thisLink truncated to new length: ".length($tempLink)."\n");
         $thisLink = $tempLink.$gblTruncatedFileCount;
     }
     # ToDo: implement a routine to check the _total_ length of the path, and truncate as necessary - the above only deals with current file.
@@ -755,7 +755,7 @@ sub processFunctionName{
             push(@FUNCTION_List_Trad, $1." Line:".$lineNumber);
             $thisExtract =~ s/function/ /i;
         }else{
-            displayMsg(25, "WARNING! processFunctionName, line:$lineNumber: no match made: \"".$thisExtract."\"\n");
+            displayMsg(25, "WARNING 20F211: processFunctionName, line:$lineNumber: no match made: \"".$thisExtract."\"\n");
             # Need to trim the string, or we get an infinite loop:
             $thisExtract =~ s/.//;  # remove first character
         }
@@ -777,7 +777,7 @@ sub processAnonMethod{
             push(@FUNCTION_List_Method, $safeString." Line:".$lineNumber);
             $thisExtract =~ s/\S+\s*:\s*function/ /i;
         }else{
-            displayMsg(999, "processAnonMethod, line:$lineNumber: no match made: ".$thisExtract."\n");
+            displayMsg(999, "ERROR 20F1FE: processAnonMethod, line:$lineNumber: no match made: ".$thisExtract."\n");
             # Need to trim the string, or we get an infinite loop:
             $thisExtract =~ s/.//;  # remove first character
         }
@@ -800,7 +800,7 @@ sub processObjectMethod{
             push(@FUNCTION_List_Method, $safeString." Line:".$lineNumber);
             $thisExtract =~ s/\s\S+?\s*=\s*function\s*?\(/ /i;
         }else{
-            displayMsg(999, "processObjectMethod, line:$lineNumber: no match made: ".$thisExtract."\n");
+            displayMsg(999, "ERROR 20F1FF: processObjectMethod, line:$lineNumber: no match made: ".$thisExtract."\n");
             # Need to trim the string, or we get an infinite loop:
             $thisExtract =~ s/.//;  # remove first character
         }
@@ -821,7 +821,7 @@ sub processNewAnonFunction{
             push(@FUNCTION_List_Anon, $1." Line:".$lineNumber);
             $thisExtract =~ s/\s\S+?\s*=\s*new\s+function(\s*)/ /i;
         }else{
-            displayMsg(999, "processNewAnonFunction, line:$lineNumber: no match made: ".$thisExtract."\n");
+            displayMsg(999, "ERROR 20F200: processNewAnonFunction, line:$lineNumber: no match made: ".$thisExtract."\n");
             # Need to trim the string, or we get an infinite loop:
             $thisExtract =~ s/.//;  # remove first character
         }
@@ -845,7 +845,7 @@ sub processClosureFunction{
             push(@FUNCTION_List_Closure, $1." Line:".$lineNumber);
             $thisExtract =~ s/function\s*\(\s*\)/ /i;
         }else{
-            displayMsg(999, "processClosureFunction, line:$lineNumber: no match made: ".$thisExtract."\n");
+            displayMsg(999, "ERROR 20F201: processClosureFunction, line:$lineNumber: no match made: ".$thisExtract."\n");
             # Need to trim the string, or we get an infinite loop:
             $thisExtract =~ s/.//;  # remove first character
         }
@@ -869,7 +869,7 @@ sub processAnonFunction{
             push(@FUNCTION_List_Anon, $1." Line:".$lineNumber);
             $thisExtract =~ s/function\w+\([\W, ]\)/ /i;
         }else{
-            displayMsg(999, "processAnonFunction, line:$lineNumber: no match made: ".$thisExtract."\n");
+            displayMsg(999, "ERROR 20F202: processAnonFunction, line:$lineNumber: no match made: ".$thisExtract."\n");
             # Need to trim the string, or we get an infinite loop:
             $thisExtract =~ s/.//;  # remove first character
         }
@@ -1091,7 +1091,7 @@ sub writeInternalData{
     {
         if (index($_, $gblFileSignature) != -1)
         {
-            displayMsg(10, "INFO: \$gblFileSignature found in file: $thisFile\n");
+            displayMsg(10, "INFO 20F212: \$gblFileSignature found in file: $thisFile\n");
         }else{
 
             ($thisType, $thisValue) = split(":", $_, 2);
@@ -1175,10 +1175,10 @@ sub processFolder{
     ## Count the number of files in this folder.
     ## May include non-files depending on file system
     ## opendir my $dh, $thisDir or die "Can't opendir '$thisDir': $!";
-    opendir my $dh, $thisDir or displayMsg(99, "ERROR processFolder(): Can't opendir '$thisDir': $!");
+    opendir my $dh, $thisDir or displayMsg(99, "ERROR 20F213: processFolder(): Can't opendir '$thisDir': $!");
     my $fileCount = scalar grep { -f "$thisDir/$_" } readdir $dh;
     ## closedir $dh or die "Can't closedir: $!";
-    closedir $dh or displayMsg(50, "WARNING processFolder(): Can't closedir: $!");
+    closedir $dh or displayMsg(50, "WARNING 20F214: processFolder(): Can't closedir: $!");
 
     my $fileList = getListOfFilesAsHTML($thisDir);
     ## MJB ToDo: send this block of HTML somewhere useful:
@@ -1373,7 +1373,7 @@ sub writePageData_HTML{
 
     unless (open OUTFILE_HTML, ">$outFileSpec")
     {
-        displayMsg(999, "Unable to write to $outFileSpec: $!\n");
+        displayMsg(999, "ERROR 20F203: Unable to write to $outFileSpec: $!\n");
         return;
     }
     displayMsg(10, "Writing to: $outFileSpec\n");
@@ -1405,7 +1405,7 @@ sub writePageData_CSS{
 
     unless (open OUTFILE_CSS, ">$outFileSpec")
     {
-        displayMsg(999, "Unable to write to $outFileSpec: $!\n");
+        displayMsg(999, "ERROR 20F204: Unable to write to $outFileSpec: $!\n");
         return;
     }
     print OUTFILE_CSS "CLASS:".join("\nCLASS:",deDupeArray(@CLASS_List));
@@ -1429,7 +1429,7 @@ sub writePageData_JS{
 
     unless (open OUTFILE_JS, ">$outFileSpec")
     {
-        displayMsg(999, "Unable to write to $outFileSpec: $!\n");
+        displayMsg(999, "ERROR 20F205: Unable to write to $outFileSpec: $!\n");
         return;
     }
     # Next three lines will print 'blank lines' if the respective array is empty:
@@ -1453,7 +1453,7 @@ sub makeHTML_Page{
     displayMsg(20, "200169 Creating report file: $outFileSpec\n");
     unless (open OUTFILE_PAGE, ">$outFileSpec")
     {
-        displayMsg(999, "20016A Unable to write to $outFileSpec: $!\n");
+        displayMsg(999, "ERROR 20016A: Unable to write to $outFileSpec: $!\n");
         return;
     }
     print OUTFILE_PAGE &getHTML_Header($thisTitle);
@@ -1985,7 +1985,7 @@ sub getDataLine{
 
     if (!$thisString)
     {
-        displayMsg(80, "Warning: 999 No data passed to sub getDataLine()\n");
+        displayMsg(80, "Warning 20F206: No data passed to sub getDataLine()\n");
         return 0;
         # Can't do anything if we don't have any text
     }else{
@@ -2494,7 +2494,7 @@ sub getReportFromDat{
         $thisFile =~ s/.*\\dats/\/files/i;   # Replace everything up to, and including "\dats\" with "/files/"
         $thisFile =~ s/\.dat/\.html/i;       # Change file extention from  .dat   to  .html
     }else{
-        displayMsg(999, "ERROR: getReportFromDat( \$thisFile: $thisFile not 'truthy')\n");
+        displayMsg(999, "ERROR 20F207: getReportFromDat( \$thisFile: $thisFile not 'truthy')\n");
     }
     displayMsg(9, "Sub: getReportFromDat( \$thisDATfile: $thisDATfile changed to: $thisFile)\n");
 
@@ -2656,7 +2656,7 @@ sub processDataStore{
     }else{
         unless (open CURRENTFILE, $thisFile)
         {
-            displayMsg(999, "processDataStore: Unable to read from $thisFile: $!\n");
+            displayMsg(999, "ERROR 20F208: processDataStore: Unable to read from $thisFile: $!\n");
             return;
         }
         if (checkDatFileFormat($thisFile) )
@@ -2677,7 +2677,7 @@ sub processDataStore{
                         if(pop @fields eq $thisMarker)
                         {
                             close CURRENTFILE;  # No need to keep searching this DAT file
-                            displayMsg(30, "processDataStore found \"$thisMarker\" in dat file:$thisFile \n");
+                            displayMsg(30, "processDataStore found \"$thisMarker\" in:$thisFile \n");
                             $gblCurrentOutput = $gblCurrentOutput.mapDatFileNameToHTMLlink($thisFile);
                             return;
                         }else{
@@ -2741,7 +2741,7 @@ sub indexInternalData{
 
         if (index($datLine, $gblFileSignature) != -1)
         {
-            displayMsg(10, "INFO: \$gblFileSignature found in file: $thisFile\n");
+            displayMsg(10, "INFO 20F215: \$gblFileSignature found in file: $thisFile\n");
         }else{
             foreach $item(@gblResourceList)
             {
@@ -2779,7 +2779,7 @@ sub finaliseInternalData{
             if ($_ =~ /^\s*$/) {
                 # String contains 0 or more white-space character and nothing else
                 # So just ignore it
-                displayMsg(999, "WARN: finaliseInternalData() - \$_ contains only whitespace. \n");
+                displayMsg(999, "WARN 20F209: finaliseInternalData() - \$_ contains only whitespace. \n");
             }else{
                 if (index($_, "\n") != -1){
                     print RESOURCE_FILE $resourceCounter.",$_";
@@ -2798,7 +2798,7 @@ sub getListOfFilesAsHTML{
   my $thisDir = shift || '.';
   my $HTMLout = "";
 
-  opendir my $dh, $thisDir or displayMsg(999, "WARNING getListOfFilesAsHTML(): opendir '$thisDir' - $!");
+  opendir my $dh, $thisDir or displayMsg(999, "WARNING 20F20A: getListOfFilesAsHTML(): opendir '$thisDir' - $!");
   my @files = readdir $dh;
   closedir $dh;
 
