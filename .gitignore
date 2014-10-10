@@ -54,3 +54,4 @@ copyAndModify.pl
 .gitignore_2*
 test.pl
 runTest.bat
+sitedoc.config
