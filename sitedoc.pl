@@ -85,6 +85,8 @@ my @gblFileArray;                                   #         List of all files,
 my (@gblCLASSlist, @gblTAGlist, @gblIDlist, @gblIMGlist, @gblHREFlist, @gblJSFILElist, @gblFORMlist, @gblCSSFILElist);
 my (@gblFUNClist, @gblANONlist, @gblMETHlist);
 my (@gblResourceList);
+my (@pathItems);
+
 
 my %configValues;
 my $output;
@@ -349,9 +351,8 @@ sub buildDataReport{
     checkReportDataPath($outFileSpec);
     $outFileSpec = $outFileSpec.$thisLink;
 
-    ## MJB Why the hell do we _NOT_ need to escape the dot on the next line??
     unless (open OUTFILE_DAT, ">$outFileSpec.html"){
-        #ToDo: Make a second attempt?
+        #ToDo: Maybe make a second attempt?
         displayMsg(999, "ERROR 20F16F: Unable to write to $outFileSpec\.html: $!\n");
         return;
     }
@@ -361,6 +362,8 @@ sub buildDataReport{
 
     print OUTFILE_DAT &getHTML_Footer();
     close OUTFILE_DAT;
+
+    displayMsg(37, "Sub Complete: buildDataReport(\$thisObject:".$thisObject.")\n");
 }
 ############################################################################
 sub writeSecondPassIndexBlock{
@@ -501,7 +504,7 @@ sub processSourceFiles{
             displayMsg(29, "~ Directory Found: \"$thisFile\"\n");
             print INDEX_FILE "\n<li>".getFirstPassFolderLink($thisBareFileID, $thisFile)."</li>";
             recordThisFile($thisBareFileID, $thisFile);
-            ## MJB ToDo: Write some info about this folder, save page in /folders/fileRef.html
+            ## MJB ToDo: Write some info about this folder, save page in /folders/ID/fileRef.html
             print "processFolder:".processFolder($thisFile)." files \n";
         }
     }else{
@@ -2030,8 +2033,16 @@ sub checkReportPath{
 # But probably not enough to be important
 sub checkFullReportPath{
     my $pathItem;
+
     my $startPath = $configValues{"reportBase"};
     my $endOfPath = shift(@_);
+
+    if(grep {$_ eq $endOfPath} @pathItems){
+      return;
+    }else{
+      push(@pathItems, $endOfPath);
+    }
+
        $endOfPath =~ s/$reportBaseEscaped[\\\/]//i;                       #  Remove 'reportBase' path, and trailing slash
        $endOfPath =~ s/[\/\\][^\/\\]+\.[^\/\\]+$//;                  #   Remove any filename.ext at the end of the string
     displayMsg(8, "Sub: checkFullReportPath( $startPath, $endOfPath )\n");
